@@ -1,3 +1,17 @@
+// app thing
+const express = require('express');
+const app = express();
+
+app.get('/health', (req, res) => {
+  res.status(200).send('Bot is running');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Web server đang chạy ở port ${PORT}`);
+});
+
+//main
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const {JWT} = require('google-auth-library')
 const cron = require('node-cron')
