@@ -82,7 +82,7 @@ async function createEmbedMemberStats(date, total, change) {
         .setColor(change > 0 ? 0x00bf63 : change < 0 ? 0xff3131 : 0x38b6ff)
         .setTitle('Tổng kết số thành viên')
         .addFields(
-            { name: 'Số thành viên hôm nay', value: (change > 0 ? '⬆' : change < 0 ? '⬇' : '▶') + ' ' + `${change} thành viên`, inline: true },
+            { name: 'Số thành viên hôm nay', value: (change > 0 ? '<:membercountup:1552314738355212338>' : change < 0 ? '<:membercountdown:1552314733963517972>' : '<:membercountnotchange:1552314736098418748>') + ' ' + `${change} thành viên`, inline: true },
             { name: 'Tổng cộng', value: `Server đang có ${total} thành viên`, inline: true },
             { name: '', value: `-# ***Đây là tổng hợp dữ liệu từ ngày ${date}***`}
         )
