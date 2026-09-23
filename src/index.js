@@ -79,7 +79,7 @@ async function createEmbedMemberStats(date, total, change) {
     }
 
     const embed = new EmbedBuilder()
-        .setColor(change > 0 ? 0x7ed321 : change < 0 ? 0xd0021b : 0x4a90e2)
+        .setColor(change > 0 ? 0x00bf63 : change < 0 ? 0xff3131 : 0x38b6ff)
         .setTitle('Tổng kết số thành viên')
         .addFields(
             { name: 'Số thành viên hôm nay', value: (change > 0 ? '⬆' : change < 0 ? '⬇' : '▶') + ' ' + `${change} thành viên`, inline: true },
