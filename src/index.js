@@ -42,17 +42,22 @@ async function logDailyMemberCount(guild) {
         throw new Error('guild not found');
     }
 
-    let targetChannel = client.channels.cache.get('1551233470926426164')
-    targetChannel.send({ embeds: [await createEmbedMemberStats()] })
-
     await doc.loadInfo()
     const sheet = doc.sheetsByIndex[0]
     const rows = await sheet.getRows()
 
+    const lastRow = rows[rows.length - 1]
+    const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
+    const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
+    const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
+
+    let targetChannel = client.channels.cache.get('1551233470926426164')
+    targetChannel.send({ embeds: [await createEmbedMemberStats(date, total, change)] })
+
+
     let lastCount;
 
     if (rows.length > 0) {
-      const lastRow = rows[rows.length - 1];
       lastCount = Number(lastRow.get('total'))
     } else {
       lastCount = guild.memberCount;
@@ -65,23 +70,13 @@ async function logDailyMemberCount(guild) {
     });
 }
 
-async function createEmbedMemberStats() {
-    await doc.loadInfo()
-    const sheet = doc.sheetsByIndex[0]
-    const rows = await sheet.getRows()
-
-    if (rows.length == 0) {
-        const embed = new EmbedBuilder()
-        .setColor(0xd0021b)
-        .setDescription('***Lỗi:*** *Không thể try cập vào dữ liệu hoặc dữ liệu không hợp lệ*')
-
-        return embed
+async function createEmbedMemberStats(date, total, change) {
+    if (date == 0 && total == 0 && change == 0) {
+      const embed = new EmbedBuilder()
+      .setColor(0xd0021b)
+      .setDescription('***Lỗi:*** *Không thể try cập vào dữ liệu hoặc dữ liệu không hợp lệ*')
+      return embed
     }
-
-    const lastRow = rows[rows.length - 1]
-    const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
-    const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
-    const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
 
     const embed = new EmbedBuilder()
         .setColor(change > 0 ? 0x7ed321 : change < 0 ? 0xd0021b : 0x4a90e2)
@@ -109,7 +104,16 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     if (interaction.commandName == "checktoday") {
-        await interaction.reply({ embeds: [await createEmbedMemberStats()] })
+        const guild = client.guilds.cache.get(process.env.GUILD_ID)
+
+        await doc.loadInfo()
+        const sheet = doc.sheetsByIndex[0]
+        const rows = await sheet.getRows()
+
+        const lastRow = rows[rows.length - 1]
+        const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
+        const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
+        await interaction.reply({ embeds: [await createEmbedMemberStats(date,guild.memberCount,guild.memberCount-total)] })
     }
 })
 
