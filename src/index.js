@@ -44,7 +44,6 @@ async function logDailyMemberCount(guild) {
   await doc.loadInfo()
   const sheet = doc.sheetsByIndex[0]
   const rows = await sheet.getRows()
-  const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
   let lastCount;
   
   if (rows.length > 0) {
@@ -61,6 +60,7 @@ async function logDailyMemberCount(guild) {
   const lastRow = rows[rows.length - 1]
   const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
   const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
+  const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
   let targetChannel = client.channels.cache.get('1551940077201002539')
   targetChannel.send({ 
     content: `@everyone | \`Member Stats\`
