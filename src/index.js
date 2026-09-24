@@ -63,7 +63,8 @@ async function logDailyMemberCount(guild) {
   const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
   let targetChannel = client.channels.cache.get('1551940077201002539')
   targetChannel.send({ 
-    content: `\`Member Stats\``, 
+    content: `@everyone | \`Member Stats\`
+    -# The owner told me to add \`@everyone\` so pls forgive me ;-;`, 
     embeds: [await createEmbedMemberStats(date, total, change)] 
   })
 }
