@@ -4,7 +4,7 @@ const {REST, Routes, ApplicationCommandOptionType} = require('discord.js');
 const commands = [
     {
         name: 'checktoday',
-        description: 'Check today members count!'
+        description: 'Check today\'s member count!'
     },
 ]
 

@@ -38,35 +38,35 @@ const serviceAccountAuth = new JWT({
 const doc = new GoogleSpreadsheet(process.env.SHEET_ID, serviceAccountAuth)
 
 async function logDailyMemberCount(guild) {
-    if (!guild) {
-        throw new Error('guild not found');
-    }
-
-    await doc.loadInfo()
-    const sheet = doc.sheetsByIndex[0]
-    const rows = await sheet.getRows()
-
-    let lastCount;
-    
-    if (rows.length > 0) {
-      lastCount = Number(lastRow.get('total'))
-    } else {
-      lastCount = guild.memberCount;
-    }
-    
-    await sheet.addRow({
-      date: new Date().toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-      total: guild.memberCount,
-      change: guild.memberCount - lastCount,
-    });
-
-    const lastRow = rows[rows.length - 1]
-    const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
-    const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
-    const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
-
-    let targetChannel = client.channels.cache.get('1551233470926426164')
-    targetChannel.send({ embeds: [await createEmbedMemberStats(date, total, change)] })
+  if (!guild) {
+      throw new Error('guild not found');
+  }
+  await doc.loadInfo()
+  const sheet = doc.sheetsByIndex[0]
+  const rows = await sheet.getRows()
+  let lastCount;
+  
+  if (rows.length > 0) {
+    lastCount = Number(lastRow.get('total'))
+  } else {
+    lastCount = guild.memberCount;
+  }
+  
+  await sheet.addRow({
+    date: new Date().toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
+    total: guild.memberCount,
+    change: guild.memberCount - lastCount,
+  });
+  const lastRow = rows[rows.length - 1]
+  const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
+  const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
+  const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
+  let targetChannel = client.channels.cache.get('1551940077201002539')
+  targetChannel.send({ 
+    content: `@everyone | \`Member Stats\`
+    -# The owner told me to add \`@everyone\` so pls forgive me ;-;`, 
+    embeds: [await createEmbedMemberStats(date, total, change)] 
+  })
 }
 
 async function createEmbedMemberStats(date, total, change) {
