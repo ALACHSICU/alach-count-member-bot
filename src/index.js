@@ -46,6 +46,20 @@ async function logDailyMemberCount(guild) {
     const sheet = doc.sheetsByIndex[0]
     const rows = await sheet.getRows()
 
+    let lastCount;
+    
+    if (rows.length > 0) {
+      lastCount = Number(lastRow.get('total'))
+    } else {
+      lastCount = guild.memberCount;
+    }
+    
+    await sheet.addRow({
+      date: new Date().toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
+      total: guild.memberCount,
+      change: guild.memberCount - lastCount,
+    });
+
     const lastRow = rows[rows.length - 1]
     const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
     const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
@@ -53,21 +67,6 @@ async function logDailyMemberCount(guild) {
 
     let targetChannel = client.channels.cache.get('1551233470926426164')
     targetChannel.send({ embeds: [await createEmbedMemberStats(date, total, change)] })
-
-
-    let lastCount;
-
-    if (rows.length > 0) {
-      lastCount = Number(lastRow.get('total'))
-    } else {
-      lastCount = guild.memberCount;
-    }
-
-    await sheet.addRow({
-        date: new Date().toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
-        total: guild.memberCount,
-        change: guild.memberCount - lastCount,
-    });
 }
 
 async function createEmbedMemberStats(date, total, change) {
