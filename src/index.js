@@ -44,6 +44,7 @@ async function logDailyMemberCount(guild) {
   await doc.loadInfo()
   const sheet = doc.sheetsByIndex[0]
   const rows = await sheet.getRows()
+  const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
   let lastCount;
   
   if (rows.length > 0) {
@@ -60,7 +61,6 @@ async function logDailyMemberCount(guild) {
   const lastRow = rows[rows.length - 1]
   const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
   const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
-  const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
   let targetChannel = client.channels.cache.get('1551940077201002539')
   targetChannel.send({ 
     content: `@everyone | \`Member Stats\`
@@ -83,7 +83,7 @@ async function createEmbedMemberStats(date, total, change) {
         .addFields(
             { name: 'Số thành viên hôm nay', value: (change > 0 ? '<:membercountup:1552314738355212338>' : change < 0 ? '<:membercountdown:1552314733963517972>' : '<:membercountnotchange:1552314736098418748>') + ' ' + `${change} thành viên`, inline: true },
             { name: 'Tổng cộng', value: `Server đang có ${total} thành viên`, inline: true },
-            { name: '', value: `-# ***Đây là tổng hợp dữ liệu từ ngày ${date}***`}
+            { name: '', value: `-# ***Đây là tổng hợp dữ liệu của ngày ${date}***`}
         )
 
     return embed
@@ -110,7 +110,7 @@ client.on('interactionCreate', async (interaction) => {
         const rows = await sheet.getRows()
 
         const lastRow = rows[rows.length - 1]
-        const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
+        const date = new Date().toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
         const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
         await interaction.reply({ embeds: [await createEmbedMemberStats(date,guild.memberCount,guild.memberCount-total)] })
     }
