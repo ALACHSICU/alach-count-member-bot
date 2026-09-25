@@ -44,38 +44,44 @@ async function logDailyMemberCount(guild) {
   await doc.loadInfo()
   const sheet = doc.sheetsByIndex[0]
   const rows = await sheet.getRows()
-  const date = lastRow.get('date') == '' ? '<null>' : lastRow.get('date')
+
+  const previousLastRow = rows[rows.length - 1]
+  const date = previousLastRow.get('date')
   let lastCount;
   
   if (rows.length > 0) {
-    lastCount = Number(lastRow.get('total'))
+    lastCount = Number(previousLastRow.get('total'))
   } else {
     lastCount = guild.memberCount;
   }
   
-  await sheet.addRow({
+  const newRow = await sheet.addRow({
     date: new Date().toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }),
     total: guild.memberCount,
     change: guild.memberCount - lastCount,
   });
-  const lastRow = rows[rows.length - 1]
-  const total = lastRow.get('total') == '' ? '<null>' : lastRow.get('total')
-  const change = lastRow.get('change') == '' ? '<null>' : lastRow.get('change')
-  let targetChannel = client.channels.cache.get('1551940077201002539')
-  targetChannel.send({ 
-    content: `@everyone | \`Member Stats\`
-    -# The owner told me to add \`@everyone\` so pls forgive me ;-;`, 
-    embeds: [await createEmbedMemberStats(date, total, change)] 
-  })
+  const total = newRow.get('total')
+  const change = newRow.get('change')
+  try {
+    let targetChannel = client.channels.cache.get('1551940077201002539')
+    await targetChannel.send({ 
+      content: `@everyone | \`Member Stats\`
+      -# The owner told me to add \`@everyone\` so pls forgive me ;-;`, 
+      embeds: [await createEmbedMemberStats(date, total, change)] 
+    })
+    console.log('done add data')
+  } catch (err) {
+    console.error(`fail when sending member stats: ${err}`)
+  }
 }
 
 async function createEmbedMemberStats(date, total, change) {
-    if (date == 0 && total == 0 && change == 0) {
-      const embed = new EmbedBuilder()
-      .setColor(0xd0021b)
-      .setDescription('***Lỗi:*** *Không thể try cập vào dữ liệu hoặc dữ liệu không hợp lệ*')
-      return embed
-    }
+    // if (date == 0 && total == 0 && change == 0) {
+    //   const embed = new EmbedBuilder()
+    //   .setColor(0xd0021b)
+    //   .setDescription('***Lỗi:*** *Không thể try cập vào dữ liệu hoặc dữ liệu không hợp lệ*')
+    //   return embed
+    // }
 
     const embed = new EmbedBuilder()
         .setColor(change > 0 ? 0x00bf63 : change < 0 ? 0xff3131 : 0x38b6ff)
@@ -83,7 +89,7 @@ async function createEmbedMemberStats(date, total, change) {
         .addFields(
             { name: 'Số thành viên hôm nay', value: (change > 0 ? '<:membercountup:1552314738355212338>' : change < 0 ? '<:membercountdown:1552314733963517972>' : '<:membercountnotchange:1552314736098418748>') + ' ' + `${change} thành viên`, inline: true },
             { name: 'Tổng cộng', value: `Server đang có ${total} thành viên`, inline: true },
-            { name: '', value: `-# ***Đây là tổng hợp dữ liệu của ngày ${date}***`}
+            { name: '\u200b', value: `-# ***Đây là tổng hợp dữ liệu của ngày ${date}***`}
         )
 
     return embed
