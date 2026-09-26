@@ -45,8 +45,7 @@ async function logDailyMemberCount(guild) {
   const sheet = doc.sheetsByIndex[0]
   const rows = await sheet.getRows()
 
-  const previousLastRow = rows[rows.length - 1]
-  const date = previousLastRow.get('date')
+  const previousLastRow = rows.length > 0 ? rows[rows.length - 1] : null
   let lastCount;
   
   if (rows.length > 0) {
@@ -60,6 +59,7 @@ async function logDailyMemberCount(guild) {
     total: guild.memberCount,
     change: guild.memberCount - lastCount,
   });
+  const date = newRow.get('date')
   const total = newRow.get('total')
   const change = newRow.get('change')
   try {
@@ -122,7 +122,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 })
 
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('59 23 * * *', async () => {
   try {
     await logDailyMemberCount(client.guilds.cache.get(process.env.GUILD_ID));
   } catch (err) {
