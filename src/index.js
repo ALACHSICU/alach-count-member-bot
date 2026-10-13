@@ -65,8 +65,7 @@ async function logDailyMemberCount(guild) {
   try {
     let targetChannel = client.channels.cache.get('1551940077201002539')
     await targetChannel.send({ 
-      content: `@everyone | \`Member Stats\`
--# The owner told me to add \`@everyone\` so pls forgive me ;-;`, 
+      content: `@everyone | \`Member Stats\``, 
       embeds: [await createEmbedMemberStats(date, total, change)] 
     })
     console.log('done add data')
